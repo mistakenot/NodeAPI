@@ -21,7 +21,8 @@ var mongoose = require('mongoose'),
 			type: Date,
 			default: Date.now
 		}
-	});
+	}),
+	log = require('./../log')(module);
 
 User.methods.encryptPassword = function(password) {
 	return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
@@ -35,11 +36,13 @@ User.virtual('userId')
 
 User.virtual('password')
 	.set(function(password) {
+		log.debug('PASSWORD');
+		log.debug(password);
 		this._plainPassword = password;
 		this.salt = crypto.randomBytes(32).toString('hex');
 		        //more secure - this.salt = crypto.randomBytes(128).toString('hex');
-		        this.hashedPassword = this.encryptPassword(password);
-		    })
+    this.hashedPassword = this.encryptPassword(password);
+  })
 	.get(function() { return this._plainPassword; });
 
 
