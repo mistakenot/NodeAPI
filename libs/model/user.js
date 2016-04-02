@@ -36,8 +36,6 @@ User.virtual('userId')
 
 User.virtual('password')
 	.set(function(password) {
-		log.debug('PASSWORD');
-		log.debug(password);
 		this._plainPassword = password;
 		this.salt = crypto.randomBytes(32).toString('hex');
 		        //more secure - this.salt = crypto.randomBytes(128).toString('hex');
