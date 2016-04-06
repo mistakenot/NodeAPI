@@ -1,20 +1,17 @@
-var mongoose = require('mongoose');
+module.exports = function(mongoose) {
+	var libs = process.cwd() + '/libs/';
+	var log = require(libs + 'log')(module);
+	var config = require(libs + 'config');
 
-var libs = process.cwd() + '/libs/';
+	mongoose.connect(config.get('mongoose:uri'));
 
-var log = require(libs + 'log')(module);
-var config = require(libs + 'config');
+	mongoose.connection.on('error', function (err) {
+		log.error('Connection error:', err.message);
+	});
 
-mongoose.connect(config.get('mongoose:uri'));
+	mongoose.connection.once('open', function callback () {
+		log.info("Connected to DB!");
+	});
 
-var db = mongoose.connection;
-
-db.on('error', function (err) {
-	log.error('Connection error:', err.message);
-});
-
-db.once('open', function callback () {
-	log.info("Connected to DB!");
-});
-
-module.exports = mongoose;
+	return mongoose;
+};

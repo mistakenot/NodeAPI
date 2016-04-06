@@ -1,20 +1,26 @@
 var helpers = require('./../../test-helpers');
 var faker = require('faker');
 var libs = process.cwd() + '/libs/';
-
-var controller = require(libs + 'services/user-service')
+var mongoose = require('mongoose');
+var mockgoose = require('mockgoose');
 
 describe('User service', () => {
   var username = faker.internet.email();
   var password = faker.internet.password();
-  var db;
+  var service;
 
-  beforeEach(() => {
-    db = require(libs + 'db/mongoose');
+  beforeAll(done => {
+    mockgoose(mongoose).then(() => {
+      mongoose.connect('mongodb://test.com/testdb', (err) => {
+        var User = require(libs + 'model/user')(mongoose);
+        var service = require(libs + 'services/user-service');
+        done(err);
+      });
+    });
   });
 
-  afterEach(() => {
-    db.disconnect();
+  afterAll(() => {
+    mongoose.disconnect();
   })
 
   it('should be able to create and retrieve a new user', () => {

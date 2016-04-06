@@ -1,51 +1,49 @@
-var mongoose = require('mongoose'),
-	crypto = require('crypto'),
+var crypto = require('crypto');
+var log = require('./../log')(module);
 
-	Schema = mongoose.Schema,
+module.exports = function(mongoose) {
+	var	Schema = mongoose.Schema;
+	var User = new Schema({
+			username: {
+				type: String,
+				unique: true,
+				required: true
+			},
+			hashedPassword: {
+				type: String,
+				required: true
+			},
+			salt: {
+				type: String,
+				required: true
+			},
+			created: {
+				type: Date,
+				default: Date.now
+			}
+		});
 
-	User = new Schema({
-		username: {
-			type: String,
-			unique: true,
-			required: true
-		},
-		hashedPassword: {
-			type: String,
-			required: true
-		},
-		salt: {
-			type: String,
-			required: true
-		},
-		created: {
-			type: Date,
-			default: Date.now
-		}
-	}),
-	log = require('./../log')(module);
+	User.methods.encryptPassword = function(password) {
+		return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
+	};
 
-User.methods.encryptPassword = function(password) {
-	return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
-    //more secure - return crypto.pbkdf2Sync(password, this.salt, 10000, 512).toString('hex');
-};
+	User.virtual('userId')
+		.get(function () {
+			return this.id;
+		});
 
-User.virtual('userId')
-.get(function () {
-	return this.id;
-});
-
-User.virtual('password')
-	.set(function(password) {
-		this._plainPassword = password;
-		this.salt = crypto.randomBytes(32).toString('hex');
-		        //more secure - this.salt = crypto.randomBytes(128).toString('hex');
-    this.hashedPassword = this.encryptPassword(password);
-  })
-	.get(function() { return this._plainPassword; });
+	User.virtual('password')
+		.set(function(password) {
+			this._plainPassword = password;
+			this.salt = crypto.randomBytes(32).toString('hex');
+	    this.hashedPassword = this.encryptPassword(password);
+	  })
+		.get(function() { return this._plainPassword; });
 
 
-User.methods.checkPassword = function(password) {
-	return this.encryptPassword(password) === this.hashedPassword;
-};
+	User.methods.checkPassword = function(password) {
+		return this.encryptPassword(password) === this.hashedPassword;
+	};
 
-module.exports = mongoose.model('User', User);
+	return mongoose.model('User', User);
+}
