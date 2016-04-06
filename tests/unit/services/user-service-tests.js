@@ -1,29 +1,21 @@
-var helpers = require('./../../test-helpers');
 var faker = require('faker');
-var libs = process.cwd() + '/libs/';
-var mongoose = require('mongoose');
-var mockgoose = require('mockgoose');
+var db = require('./../../mock-db');
+var log = load.log(module);
 
 describe('User service', () => {
   var username = faker.internet.email();
   var password = faker.internet.password();
-  var service;
-  var retrievedUser;
+  var service, retrievedUser;
 
   beforeAll(done => {
-    mockgoose(mongoose).then(() => {
-      mongoose.connect('mongodb://test.com/testdb', (err) => {
-        var User = require(libs + 'model/user')(mongoose);
-        service = require(libs + 'services/user-service')(User);
-        done();
-      });
+    db.connect().then(mongoose => {
+      var User = load.model('user')(mongoose);
+      service = load.service('user')(User);
+      done();
     });
   });
 
-  afterAll(done => {
-    mongoose.disconnect();
-    mockgoose.reset(() => done());
-  })
+  afterAll(db.disconnect);
 
   it('should create a user', done => {
     service.createWithPassword(username, password).then(done);
@@ -42,4 +34,4 @@ describe('User service', () => {
     expect(retrievedUser.checkPassword(password)).toEqual(true);
   });
 
-})
+});

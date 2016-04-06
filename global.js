@@ -1,2 +1,9 @@
 GLOBAL._ = require('lodash');
-GLOBAL.log = require('./libs/log');
+
+var libs = process.cwd() + '/libs/';
+
+GLOBAL.load = {
+  service: (name) => require(libs + 'services/' + name + '-service'),
+  model: (name) => require(libs + 'models/' + name + '-model'),
+  log: require('./libs/log')
+}

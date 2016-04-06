@@ -4,9 +4,10 @@ var router = express.Router();
 
 var libs = process.cwd() + '/libs/';
 var log = require('./../log')(module);
-var db = require(libs + 'db/mongoose');
-var User = require(libs + 'model/user');
-var service = require(libs + 'services/user-service');
+var db = require(libs + 'db/mongoose')(require('mongoose'));
+var User = require(libs + 'models/user-model')(db)
+var service = require(libs + 'services/user-service')(User);
+var route = require('./routes');
 
 router.get('/info', passport.authenticate('bearer', { session: false }),
     function(req, res) {
@@ -22,44 +23,35 @@ router.get('/info', passport.authenticate('bearer', { session: false }),
     }
 );
 
-/*
-router.post('/', (req, res) => {
 
-  log.debug(req.body.username);
+var onPromise = (getPromise) => {
+  return (req, res) => {
+    getPromise(req).then(
+      (ok) => {
+        res.json(ok);
+      },
+      (err) => {
+  			res.json({
+  				error: err
+  			});
+      }
+    );
+  }
+};
 
-  var user = new User({
-    username: req.body.username
-  });
-
-  user.set('password', req.body.password);
-
-  user.save(err => {
-    if (!err) {
-			log.info("New user created with id: %s", user.id);
-			return res.json({
-				status: 'OK',
-				user: user
-			});
-		} else {
-			if(err.name === 'ValidationError') {
-				res.statusCode = 400;
-				res.json({
-					error: 'Validation error'
-				});
-			} else {
-				res.statusCode = 500;
-				res.json({
-					error: 'Server error'
-				});
-			}
-			log.error('Internal error(%d): %s', res.statusCode, err.message);
-		}
+router.get('/:id', onPromise(req => {
+    if(req.params.id === '42') {
+      return Promise.reject("AHH!");
+    } else {
+      return Promise.resolve({'msg': 'OK'})
+    }
   })
-})
-*/
+);
 
-router.post('/'), (req, res) => {
-  service.createWithPassword(req.body).then()
-});
+router.post('/',
+  route.onPromise(() => {
+    return service.createWithPassword(req.body).then(user => { username: user.username });
+  })
+)
 
 module.exports = router;

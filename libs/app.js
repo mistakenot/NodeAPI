@@ -6,15 +6,15 @@ var passport = require('passport');
 var methodOverride = require('method-override');
 
 var libs = process.cwd() + '/libs/';
-require(libs + 'auth/auth');
+// require(libs + 'auth/auth');
 
 var config = require('./config');
 var log = require('./log')(module);
-var oauth2 = require('./auth/oauth2');
+//var oauth2 = require('./auth/oauth2');
 
-var api = require('./routes/api');
+//var api = require('./routes/api');
 var users = require('./routes/users');
-var articles = require('./routes/articles');
+//var articles = require('./routes/articles');
 
 var app = express();
 
@@ -24,10 +24,10 @@ app.use(cookieParser());
 app.use(methodOverride());
 app.use(passport.initialize());
 
-app.use('/api', api);
+//app.use('/api', api);
 app.use('/api/users', users);
-app.use('/api/articles', articles);
-app.use('/api/oauth/token', oauth2.token);
+//app.use('/api/articles', articles);
+//app.use('/api/oauth/token', oauth2.token);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next){
