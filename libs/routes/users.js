@@ -6,6 +6,7 @@ var libs = process.cwd() + '/libs/';
 var log = require('./../log')(module);
 var db = require(libs + 'db/mongoose');
 var User = require(libs + 'model/user');
+var service = require(libs + 'services/user-service');
 
 router.get('/info', passport.authenticate('bearer', { session: false }),
     function(req, res) {
@@ -21,6 +22,7 @@ router.get('/info', passport.authenticate('bearer', { session: false }),
     }
 );
 
+/*
 router.post('/', (req, res) => {
 
   log.debug(req.body.username);
@@ -54,5 +56,10 @@ router.post('/', (req, res) => {
 		}
   })
 })
+*/
+
+router.post('/'), (req, res) => {
+  service.createWithPassword(req.body).then()
+});
 
 module.exports = router;
