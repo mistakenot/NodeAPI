@@ -7,23 +7,18 @@ module.exports.withAuthentication = action => {
   ]
 }
 
-module.exports.onPromise = function(getPromise) {
-  return function(req, res) {
+module.exports.onPromise = (getPromise) => {
+  return (req, res) => {
     getPromise(req).then(
-      function(ok) {
+      (ok) => {
         res.json(ok);
       },
-      function(err) {
-        log.error('Internal error: %s', err);
+      (err) => {
+        res.responseCode = 500;
   			res.json({
-  				error: 'Server error: ' + err.message
+  				error: err
   			});
       }
-    ).catch(err => {
-      log.error('Internal error: %s', err);
-      res.json({
-        error: 'Server error: ' + err.message
-      });
-    })
-  };
-}
+    );
+  }
+};

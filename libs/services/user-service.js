@@ -17,6 +17,10 @@ module.exports = function(User) {
             throw new Error('User already exists: ' + username);
           }
 
+          if (password === undefined) {
+            throw new Error("Password is undefined.");
+          }
+
           var user = new User({
             username: username
           });

@@ -34,6 +34,9 @@ module.exports = function(mongoose) {
 
 	User.virtual('password')
 		.set(function(password) {
+			if(password === undefined) {
+				throw new Error("Password is undefined.");
+			}
 			this._plainPassword = password;
 			this.salt = crypto.randomBytes(32).toString('hex');
 	    this.hashedPassword = this.encryptPassword(password);

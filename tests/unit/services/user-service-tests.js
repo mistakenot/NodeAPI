@@ -34,4 +34,8 @@ describe('User service', () => {
     expect(retrievedUser.checkPassword(password)).toEqual(true);
   });
 
+  it('should reject an invalid password', done => {
+    service.createWithPassword(faker.internet.email(), undefined);
+  });
+
 });
