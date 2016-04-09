@@ -35,7 +35,9 @@ describe('User service', () => {
   });
 
   it('should reject an invalid password', done => {
-    service.createWithPassword(faker.internet.email(), undefined);
+    service
+      .createWithPassword(faker.internet.email(), undefined)
+      .then(undefined, done);
   });
 
 });

@@ -1,4 +1,5 @@
 var passport = require('passport')
+var log = require('./../log')(module);
 
 module.exports.withAuthentication = action => {
   return [
@@ -11,14 +12,22 @@ module.exports.onPromise = (getPromise) => {
   return (req, res) => {
     getPromise(req).then(
       (ok) => {
+        res.statusCode = 200;
         res.json(ok);
       },
       (err) => {
-        res.responseCode = 500;
-  			res.json({
-  				error: err
-  			});
+        res.statusCode = 500;
+        res.json({
+          error: err
+        });
       }
-    );
+    )
+    .catch(err => {
+      log.error(err);
+      res.statusCode = 500;
+      res.json({
+        error: err
+      });
+    });
   }
 };

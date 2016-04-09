@@ -23,18 +23,12 @@ router.get('/info', passport.authenticate('bearer', { session: false }),
     }
 );
 
-router.get('/:id', r.onPromise(req => {
-    if(req.params.id === '42') {
-      return Promise.reject("AHH!");
-    } else {
-      return Promise.resolve({'msg': 'OK'})
-    }
-  }) 
-);
-
 router.post('/',
   r.onPromise(req => {
-    return service.createWithPassword(req.body).then(user => { username: user.username });
+    return service.createWithPassword(req.body.username, req.body.password)
+      .then(u => {
+        return { username: u.username };
+      });
   })
 )
 

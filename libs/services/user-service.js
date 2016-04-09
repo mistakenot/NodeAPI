@@ -3,37 +3,38 @@ var log = require('./../log')(module);
 var _ = require('lodash');
 
 module.exports = function(User) {
+  var projection = 'email';
+
   return {
     createWithPassword(username, password) {
       return new Promise((resolve, reject) => {
-        User.findOne({
-          username: username
-        }, (err, existingUser) => {
-          if (err) {
-            throw err;
+        User.findOne({ username: username }, projection, (err, existingUser) => {
+
+          if (err != null) {
+            return reject(err);
           }
 
           if (existingUser) {
-            throw new Error('User already exists: ' + username);
+            return reject('User already exists');
           }
 
           if (password === undefined) {
-            throw new Error("Password is undefined.");
+            log.error('test');
+            return reject("Password is undefined.");
           }
 
           var user = new User({
-            username: username
+            username: username,
+            password: password
           });
-
-          user.set('password', password);
 
           user.save((error, user, affected) => {
             if (error) {
-              throw error
+              reject(error);
             }
 
             if (affected != 1) {
-              throw new Error('Operation returned rows affected: ' + affected);
+              reject('Operation returned rows affected: ' + affected);
             }
 
             resolve(user);
@@ -43,8 +44,20 @@ module.exports = function(User) {
     },
 
     getByUsername(username) {
-      return User.findOne({username: username}).exec();
-    }
-  }
+      return User.findOne({ username: username }, projection).exec();
+    },
 
+    getById(id, privateFields) {
+      return new Promise((resolve, reject) => {
+        User.findById(id, projection, (err, user) => {
+          if (err != null) {
+            reject(err);
+          } else {
+            resolve(user);
+          }
+        })
+      })
+    }
+
+  }
 }

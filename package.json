@@ -23,6 +23,7 @@
     "passport-http": "^0.2.x",
     "passport-http-bearer": "^1.0.x",
     "passport-oauth2-client-password": "^0.1.x",
+    "request": "^2.70.0",
     "winston": "^0.8.x"
   },
   "jshintConfig": {
@@ -50,10 +51,13 @@
   "devDependencies": {
     "faker": "^2.1.5",
     "gulp": "^3.9.1",
+    "gulp-async-func-runner": "^0.1.10",
     "gulp-jasmine": "^2.3.0",
     "gulp-nodemon": "^2.0.6",
+    "jasmine-node": "^1.14.5",
     "mockgoose": "^6.0.0",
     "mongoose-mock": "^0.4.0",
-    "proxyquire": "^1.7.4"
+    "proxyquire": "^1.7.4",
+    "request": "^2.70.0"
   }
 }

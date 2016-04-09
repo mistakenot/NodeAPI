@@ -2,11 +2,11 @@ var mongoose = require('mongoose');
 var mockgoose = require('mockgoose');
 
 module.exports.connect = function () {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     mockgoose(mongoose).then(() => {
       mongoose.connect('mongodb://test.com/testdb', (err) => {
         if (err) {
-          throw err;
+          reject(err);
         }
         resolve(mongoose);
       });
@@ -15,6 +15,6 @@ module.exports.connect = function () {
 };
 
 module.exports.disconnect = function (done) {
-  mongoose.disconnect();
   mockgoose.reset(() => done());
+  mongoose.disconnect();
 }
