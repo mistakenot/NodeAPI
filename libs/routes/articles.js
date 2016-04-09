@@ -9,24 +9,24 @@ var db = require(libs + 'db/mongoose');
 var Article = require(libs + 'model/article');
 
 router.get('/', passport.authenticate('bearer', { session: false }), function(req, res) {
-	
+
 	Article.find(function (err, articles) {
 		if (!err) {
 			return res.json(articles);
 		} else {
 			res.statusCode = 500;
-			
+
 			log.error('Internal error(%d): %s',res.statusCode,err.message);
-			
-			return res.json({ 
-				error: 'Server error' 
+
+			return res.json({
+				error: 'Server error'
 			});
 		}
 	});
 });
 
 router.post('/', passport.authenticate('bearer', { session: false }), function(req, res) {
-	
+
 	var article = new Article({
 		title: req.body.title,
 		author: req.body.author,
@@ -37,20 +37,20 @@ router.post('/', passport.authenticate('bearer', { session: false }), function(r
 	article.save(function (err) {
 		if (!err) {
 			log.info("New article created with id: %s", article.id);
-			return res.json({ 
-				status: 'OK', 
-				article:article 
+			return res.json({
+				status: 'OK',
+				article:article
 			});
 		} else {
 			if(err.name === 'ValidationError') {
 				res.statusCode = 400;
-				res.json({ 
-					error: 'Validation error' 
+				res.json({
+					error: 'Validation error'
 				});
 			} else {
 				res.statusCode = 500;
-				res.json({ 
-					error: 'Server error' 
+				res.json({
+					error: 'Server error'
 				});
 			}
 			log.error('Internal error(%d): %s', res.statusCode, err.message);
@@ -59,28 +59,28 @@ router.post('/', passport.authenticate('bearer', { session: false }), function(r
 });
 
 router.get('/:id', passport.authenticate('bearer', { session: false }), function(req, res) {
-	
+
 	Article.findById(req.params.id, function (err, article) {
-		
+
 		if(!article) {
 			res.statusCode = 404;
-			
-			return res.json({ 
-				error: 'Not found' 
+
+			return res.json({
+				error: 'Not found'
 			});
 		}
-		
+
 		if (!err) {
-			return res.json({ 
-				status: 'OK', 
-				article:article 
+			return res.json({
+				status: 'OK',
+				article:article
 			});
 		} else {
 			res.statusCode = 500;
 			log.error('Internal error(%d): %s',res.statusCode,err.message);
-			
-			return res.json({ 
-				error: 'Server error' 
+
+			return res.json({
+				error: 'Server error'
 			});
 		}
 	});
@@ -93,8 +93,8 @@ router.put('/:id', passport.authenticate('bearer', { session: false }), function
 		if(!article) {
 			res.statusCode = 404;
 			log.error('Article with id: %s Not Found', articleId);
-			return res.json({ 
-				error: 'Not found' 
+			return res.json({
+				error: 'Not found'
 			});
 		}
 
@@ -102,25 +102,25 @@ router.put('/:id', passport.authenticate('bearer', { session: false }), function
 		article.description = req.body.description;
 		article.author = req.body.author;
 		article.images = req.body.images;
-		
+
 		article.save(function (err) {
 			if (!err) {
 				log.info("Article with id: %s updated", article.id);
-				return res.json({ 
-					status: 'OK', 
-					article:article 
+				return res.json({
+					status: 'OK',
+					article:article
 				});
 			} else {
-				if(err.name === 'ValidationError') {
+				if (err.name === 'ValidationError') {
 					res.statusCode = 400;
-					return res.json({ 
-						error: 'Validation error' 
+					return res.json({
+						error: 'Validation error'
 					});
 				} else {
 					res.statusCode = 500;
-					
-					return res.json({ 
-						error: 'Server error' 
+
+					return res.json({
+						error: 'Server error'
 					});
 				}
 				log.error('Internal error (%d): %s', res.statusCode, err.message);

@@ -13,7 +13,11 @@ var log = require('./log')(module);
 //var oauth2 = require('./auth/oauth2');
 
 //var api = require('./routes/api');
-var users = require('./routes/users');
+var db = require(libs + 'db/mongoose')(require('mongoose'));
+
+var services = require(libs + 'services/services')(db);
+var routes = require(libs + 'routes/routes')(services);
+
 //var articles = require('./routes/articles');
 
 var app = express();
@@ -25,7 +29,7 @@ app.use(methodOverride());
 app.use(passport.initialize());
 
 //app.use('/api', api);
-app.use('/api/users', users);
+app.use('/api/users', routes.users);
 //app.use('/api/articles', articles);
 //app.use('/api/oauth/token', oauth2.token);
 

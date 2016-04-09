@@ -17,9 +17,16 @@ describe('User API', () => {
       password: faker.internet.password()
     };
 
-    it('creates a new user and returns 201', done => {
-      request.post({url: '/api/users/', body: JSON.stringify(user)}, ok(200, body => { done(body); }))
+    it('creates a new user', done => {
+      request.post({url: '/users/', body: JSON.stringify(user)}, ok(200, body => { done(body); }))
     });
 
   });
+
+  describe('GET', () => {
+
+    it('retrieves an existing user', done => {
+      done();
+    });
+  })
 });
