@@ -14,7 +14,6 @@ var log = require('./log')(module);
 
 //var api = require('./routes/api');
 var db = require(libs + 'db/mongoose')(require('mongoose'));
-
 var services = require(libs + 'services/services')(db);
 var routes = require(libs + 'routes/routes')(services);
 
