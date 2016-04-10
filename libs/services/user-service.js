@@ -2,7 +2,7 @@ var libs = process.cwd() + '/libs/';
 var log = require('./../log')(module);
 var _ = require('lodash');
 
-module.exports = function(User) {
+module.exports = function(User, Password) {
   var projection = 'username _id';
 
   return {

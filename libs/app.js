@@ -15,8 +15,11 @@ var loadDb = require('./db/mongoose')(
 
 var getApp = (db) => {
   var app = middleware(express());
-  var services = require(libs + 'services/services')(db);
+
+  var models = require(libs + 'models/models')(db);
+  var services = require(libs + 'services/services')(models);
   var routes = require(libs + 'routes/routes')(services);
+  console.log(">>>>");
   //var oauth2 = require('./auth/oauth2');
 
   // app routes

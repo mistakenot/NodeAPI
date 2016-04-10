@@ -1,8 +1,8 @@
-module.exports = (db) => {
-  var userModel = require('./../models/user-model')(db)
-  var userService = require('./user-service')(userModel);
+module.exports = (models) => {
+  var userService = require('./user-service')(models.user, models.password);
 
   return {
     users: userService
   }
 }
+ 

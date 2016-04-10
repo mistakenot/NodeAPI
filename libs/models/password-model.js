@@ -6,7 +6,8 @@ module.exports = (mongoose) => {
   var Password = new Schema({
       userId: {
         type: String,
-        required: true
+        required: true,
+        unique: true
       },
 			hashedPassword: {
 				type: String,
