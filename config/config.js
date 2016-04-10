@@ -1,24 +1,34 @@
 var nconf = require('nconf').env();
+var path = process.cwd() + '/config/';
 
 var using = (config) => {
-  nconf.file({
-    file: './' + config + '.json'
-  })
+  nconf.file(config, process.cwd() + '/config/' + config + '.json');
 };
 
-if (process.args.contains('mock')) {
+var hasArg = (val) => {
+  return process.argv.indexOf(val) != -1
+};
+
+// MongoDB
+//using('mongo.local');
+if (hasArg('mock')) {
   using('mongo.mock');
 }
 
-if (process.args.contains('testing')) {
+// Testing
+if (hasArg('test')) {
   using('testing');
 }
 
-using('config');
-using('mongo.local');
-using('net.local');
+// Oauth
 using('clients');
 
-nconf.file({ file: process.cwd() + '/config.json'});
+// General
+using('config');
+using('net.local');
+using('secrets');
+using('braintree.sandbox');
+
+nconf.loadFilesSync([path + 'config.json']);
 
 module.exports = nconf;
