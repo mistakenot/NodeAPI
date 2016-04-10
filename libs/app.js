@@ -1,14 +1,7 @@
 var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var passport = require('passport');
-var methodOverride = require('method-override');
-
 var middleware = require('./middleware');
 
 var libs = process.cwd() + '/libs/';
-// require(libs + 'auth/auth');
 
 var config = require('./../config/config');
 var log = require('./log')(module);
@@ -24,6 +17,7 @@ var getApp = (db) => {
   var app = middleware(express());
   var services = require(libs + 'services/services')(db);
   var routes = require(libs + 'routes/routes')(services);
+  //var oauth2 = require('./auth/oauth2');
 
   // app routes
   app.use('/api/users', routes.users);

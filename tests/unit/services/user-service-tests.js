@@ -18,20 +18,35 @@ describe('User service', () => {
   afterAll(db.disconnect);
 
   it('should create a user', done => {
-    service.createWithPassword(username, password).then(done);
+    service
+      .createWithPassword(username, password)
+      .then(u => {
+        expect(u.username).toEqual(username);
+        expect(u.id).toBeDefined();
+        done();
+      })
+      .catch(log.error);
   });
 
-  it('should get a user', done => {
-    service.getByUsername(username).then(u => {
-      expect(u).toBeDefined();
-      expect(u.username).toEqual(username);
-      retrievedUser = u;
-      done();
-    });
+  it('should get a user by username', done => {
+    service
+      .getByUsername(username)
+      .then(u => {
+        expect(u).toBeDefined();
+        expect(u.username).toEqual(username);
+        retrievedUser = u;
+        done();
+      })
   });
 
-  it('should have a valid password', () => {
-    expect(retrievedUser.checkPassword(password)).toEqual(true);
+  it('should get a user by id', done => {
+    service
+      .getById(retrievedUser._id, false)
+      .then(u => {
+        expect(u).toBeDefined();
+        expect(u.username).toEqual(username);
+        done();
+      })
   });
 
   it('should reject an invalid password', done => {

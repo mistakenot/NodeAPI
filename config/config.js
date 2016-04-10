@@ -4,9 +4,7 @@ var log = require(process.cwd() + '/libs/log')(module);
 var used = [];
 
 var using = (config) => {
-  if (hasArg('--config')) {
-    log.debug('Using: ' + config);
-  }
+  log.debug('Using: ' + config);
   nconf.file(config, process.cwd() + '/config/' + config + '.json');
 };
 
@@ -15,10 +13,10 @@ var hasArg = (val) => {
 };
 
 // MongoDB
-using('mongo.local');
 if (hasArg('--mock')) {
   using('mongo.mock');
 }
+using('mongo.local');
 
 // Testing
 if (hasArg('test')) {
@@ -33,5 +31,9 @@ using('config');
 using('net.local');
 using('secrets');
 using('braintree.sandbox');
+
+if (hasArg('--config')) {
+  console.log(nconf.get());
+}
 
 module.exports = nconf;

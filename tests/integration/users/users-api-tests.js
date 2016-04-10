@@ -3,30 +3,39 @@ var request = require('./../client');
 
 var ok = (code, next) => {
   return (error, response, body) => {
-    console.log(body);
     expect(error).toEqual(null);
     expect(response.statusCode).toEqual(code);
-    next(body);
+    next(JSON.parse(body));
   }
 }
 
 describe('User API', () => {
-  describe('POST', () => {
-    var user = {
+  describe('can create and retrieve a user', () => {
+    var id, user = {
       username: faker.internet.email(),
       password: faker.internet.password()
     };
 
-    it('creates a new user', done => {
-      request.post({url: '/users/', body: JSON.stringify(user)}, ok(200, body => { done(body); }))
+    it('creates a new user with POST', done => {
+      request.post({url: '/users/', body: JSON.stringify(user)},
+        ok(200, body => {
+          expect(body.username).toEqual(user.username);
+          expect(body.id).toBeDefined();
+          id = body.id;
+          done(body);
+        })
+      )
     });
 
-  });
-
-  describe('GET', () => {
-
-    it('retrieves an existing user', done => {
-      done();
+    it('retrieves an existing user with GET', done => {
+      request.get({url: '/users/' + id},
+        ok(200, body => {
+          expect(body.username).toEqual(user.username);
+          expect(body.id).toEqual(id);
+          done();
+        })
+      )
     });
+
   })
 });

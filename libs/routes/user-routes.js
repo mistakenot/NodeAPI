@@ -22,11 +22,19 @@ module.exports = (service) => {
       }
   );
 
+  router.get('/:id',
+    r.onPromise(req => {
+      return service.getById(req.params.id).then(u => {
+        return { username: u.username, id: u._id };
+      })
+    })
+  );
+
   router.post('/',
     r.onPromise(req => {
       return service.createWithPassword(req.body.username, req.body.password)
         .then(u => {
-          return { username: u.username };
+          return { username: u.username, id: u._id };
         });
     })
   )

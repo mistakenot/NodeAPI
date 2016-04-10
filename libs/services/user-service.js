@@ -3,7 +3,7 @@ var log = require('./../log')(module);
 var _ = require('lodash');
 
 module.exports = function(User) {
-  var projection = 'email';
+  var projection = 'username _id';
 
   return {
     createWithPassword(username, password) {
@@ -19,7 +19,6 @@ module.exports = function(User) {
           }
 
           if (password === undefined) {
-            log.error('test');
             return reject("Password is undefined.");
           }
 
