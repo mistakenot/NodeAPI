@@ -5,53 +5,60 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var methodOverride = require('method-override');
 
+var middleware = require('./middleware');
+
 var libs = process.cwd() + '/libs/';
 // require(libs + 'auth/auth');
 
-var config = require('./config');
+var config = require('./../config/config');
 var log = require('./log')(module);
 //var oauth2 = require('./auth/oauth2');
 
 //var api = require('./routes/api');
-var db = require(libs + 'db/mongoose')(require('mongoose'));
-var services = require(libs + 'services/services')(db);
-var routes = require(libs + 'routes/routes')(services);
+var loadDb = require('./db/mongoose')(
+  config.get('mongoose:uri'),
+  config.get('mongoose:mockgoose')
+);
 
-//var articles = require('./routes/articles');
+var getApp = (db) => {
+  var app = middleware(express());
+  var services = require(libs + 'services/services')(db);
+  var routes = require(libs + 'routes/routes')(services);
 
-var app = express();
+  // app routes
+  app.use('/api/users', routes.users);
+  //app.use('/api', api);
+  //app.use('/api/articles', articles);
+  //app.use('/api/oauth/token', oauth2.token);
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(methodOverride());
-app.use(passport.initialize());
+  // catch 404 and forward to error handler
+  app.use((req, res, next) => {
+      res.status(404);
+      log.debug('%s %d %s', req.method, res.statusCode, req.url);
+      res.json({
+      	error: 'Not found'
+      });
+      return;
+  });
 
-//app.use('/api', api);
-app.use('/api/users', routes.users);
-//app.use('/api/articles', articles);
-//app.use('/api/oauth/token', oauth2.token);
+  // error handlers
+  app.use((err, req, res, next) => {
+      res.status(err.status || 500);
+      log.error('%s %d %s', req.method, res.statusCode, err.message);
+      res.json({
+        error: err.message,
+        stack: err.stack,
+        args: err.arguments
+      });
+      return;
+  });
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next){
-    res.status(404);
-    log.debug('%s %d %s', req.method, res.statusCode, req.url);
-    res.json({
-    	error: 'Not found'
-    });
-    return;
-});
+  return app;
+}
 
-// error handlers
-app.use(function(err, req, res, next){
-    res.status(err.status || 500);
-    log.error('%s %d %s', req.method, res.statusCode, err.message);
-    res.json({
-      error: err.message,
-      stack: err.stack,
-      args: err.arguments
-    });
-    return;
-});
+var result = loadDb
+  .then(db => {
+    return getApp(db);
+  });
 
-module.exports = app;
+module.exports = result;
